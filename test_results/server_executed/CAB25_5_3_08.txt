@@ -1,0 +1,29 @@
+Clique table members: 600.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Root relaxation solution time = 3.07 sec. (1914.48 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0      911.9552    33                    911.9552    11550         
+*     0+    0                         1009.9326      911.9552    11550    9.70%
+      0     0      911.9552    34     1009.9326       Cuts: 3    11581    9.70%
+*     0+    0                          995.5854      911.9552    11581    8.40%
+*     0+    0                          915.1561      911.9552    11581    0.35%
+*     0+    0                          912.2405      911.9552    11581    0.03%
+      0     2      911.9552    34      912.2405      911.9577    11581    0.03%
+Elapsed time = 18.36 sec. (23156.39 ticks, tree = 0.00 MB, solutions = 4)
+
+Mixed integer rounding cuts applied:  2
+Gomory fractional cuts applied:  1
+
+Root node processing (before b&c):
+  Real time             =   18.18 sec. (23086.85 ticks)
+Sequential b&c:
+  Real time             =    0.33 sec. (187.78 ticks)
+                          ------------
+Total (root+branch&cut) =   18.51 sec. (23274.63 ticks)
+Max Objective value = 912.240549
+Hubs: 1 4 7 12 17 

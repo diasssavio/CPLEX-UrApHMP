@@ -1,0 +1,26 @@
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:  1194   Dual objective     =           252.596799
+Iteration:  2262   Dual objective     =           376.586802
+Iteration:  3112   Dual objective     =           401.931336
+Iteration:  4073   Dual objective     =           434.774471
+Iteration:  5038   Dual objective     =           454.272571
+Iteration:  5984   Dual objective     =           465.127333
+Iteration:  6944   Dual objective     =           481.493752
+Iteration:  7887   Dual objective     =           491.505811
+Iteration:  8835   Dual objective     =           500.697475
+Perturbation started.
+Iteration:  9713   Dual objective     =           504.068613
+Iteration: 10563   Dual objective     =           509.109206
+Iteration: 11372   Dual objective     =           517.386297
+Iteration: 12075   Dual objective     =           520.440151
+Iteration: 12817   Dual objective     =           523.820515
+Iteration: 13694   Dual objective     =           526.585647
+Iteration: 14390   Dual objective     =           527.946489
+Iteration: 14923   Dual objective     =           528.485361
+Iteration: 15516   Dual objective     =           529.909673
+Removing perturbation.
+Objective value: 530.005
+Total time: 2.77

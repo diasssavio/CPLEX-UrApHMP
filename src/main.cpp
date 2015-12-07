@@ -17,7 +17,7 @@ int main(){
 	int n;
 
 	scanf("%d", &n);
-	double X = 1.0, alpha_1 = 0.8, delta = 1.0;
+	double X = 1.0, alpha_1 = 0.2, delta = 1.0;
 	uraphmp instance(n, X, alpha_1, delta);
 
 	vector< vector< double> > aux;
@@ -46,7 +46,7 @@ int main(){
 	aux.clear();
 
 	// Creating a solution object
-	int p = 3;
+	int p = 5;
 	int r = 3;
 	solution sol(instance, p, r);
 
@@ -60,6 +60,7 @@ int main(){
 		// cplex.setParam(IloCplex::NodeLim, 0);
 		cplex.setParam(IloCplex::Param::Preprocessing::Aggregator, 0);
 		cplex.setParam(IloCplex::Param::Preprocessing::Presolve, 0);
+		cplex.setParam(IloCplex::PreInd, IloFalse);
 		// cplex.exportModel("test.lp");
 		cplex.solve();
 

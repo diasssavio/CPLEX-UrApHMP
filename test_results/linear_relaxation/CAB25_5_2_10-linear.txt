@@ -1,0 +1,59 @@
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   707   Dual objective     =           923.307128
+Iteration:  1406   Dual objective     =           923.307286
+Iteration:  2045   Dual objective     =           923.309033
+Iteration:  2872   Dual objective     =           924.629679
+Iteration:  3677   Dual objective     =           930.238299
+Iteration:  4455   Dual objective     =           940.009764
+Iteration:  5268   Dual objective     =           948.519618
+Iteration:  6151   Dual objective     =           955.249635
+Iteration:  6829   Dual objective     =           959.761498
+Iteration:  7636   Dual objective     =           966.119541
+Iteration:  8439   Dual objective     =           970.123457
+Iteration:  9190   Dual objective     =           972.352607
+Iteration:  9870   Dual objective     =           974.487159
+Iteration: 10554   Dual objective     =           977.067618
+Iteration: 11180   Dual objective     =           979.397973
+Iteration: 11888   Dual objective     =           982.159548
+Iteration: 12498   Dual objective     =           984.913670
+Iteration: 13131   Dual objective     =           986.307279
+Iteration: 13694   Dual objective     =           987.967155
+Iteration: 14147   Dual objective     =           988.952494
+Iteration: 14631   Dual objective     =           990.482399
+Iteration: 14975   Dual objective     =           991.697289
+Iteration: 15326   Dual objective     =           993.564230
+Iteration: 15637   Dual objective     =           995.305329
+Iteration: 15959   Dual objective     =           997.202413
+Iteration: 16252   Dual objective     =           998.888129
+Iteration: 16544   Dual objective     =          1000.275207
+Iteration: 16891   Dual objective     =          1001.005515
+Iteration: 17171   Dual objective     =          1001.792917
+Iteration: 17420   Dual objective     =          1002.511365
+Iteration: 17707   Dual objective     =          1003.366137
+Iteration: 17976   Dual objective     =          1004.352680
+Iteration: 18253   Dual objective     =          1005.079686
+Iteration: 18506   Dual objective     =          1005.410426
+Iteration: 18780   Dual objective     =          1005.998772
+Iteration: 19073   Dual objective     =          1006.546275
+Iteration: 19345   Dual objective     =          1006.986458
+Iteration: 19613   Dual objective     =          1007.314726
+Iteration: 19864   Dual objective     =          1007.647627
+Iteration: 20128   Dual objective     =          1008.003703
+Iteration: 20396   Dual objective     =          1008.256393
+Iteration: 20668   Dual objective     =          1008.487076
+Iteration: 20912   Dual objective     =          1008.724556
+Iteration: 21161   Dual objective     =          1008.944452
+Iteration: 21425   Dual objective     =          1009.097160
+Iteration: 21690   Dual objective     =          1009.193907
+Iteration: 21962   Dual objective     =          1009.299173
+Iteration: 22228   Dual objective     =          1009.381930
+Iteration: 22509   Dual objective     =          1009.416479
+Iteration: 22779   Dual objective     =          1009.444093
+Iteration: 23051   Dual objective     =          1009.457671
+Removing perturbation.
+Objective value: 1009.46
+Total time: 12.94
