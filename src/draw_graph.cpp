@@ -15,7 +15,7 @@ drawer::drawer(double** z, solution _sol){
       if((z[i][j] != 0.0) && (i != j)){
         edges.push_back(Edge(i, j));
         weights.push_back(100 * z[i][j]);
-        cout << z[i][j] << endl;
+        // cout << z[i][j] << endl;
       }
     names.push_back(_to_string(i + 1));
   }

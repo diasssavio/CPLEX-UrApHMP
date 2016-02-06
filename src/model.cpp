@@ -39,6 +39,7 @@ void model::init(){
 		z[i] = IloNumVarArray(getEnv(), n);
 		for(IloInt k = 0; k < n; k++){
 			z[i][k] = IloNumVar(getEnv(), 0, 1, ILOINT);
+			// z[i][k] = IloNumVar(getEnv(), 0, 1, ILOFLOAT);
 			stringstream z_name;
 			z_name << "z[" << i << "][" << k << "]";
 			z[i][k].setName(z_name.str().c_str());

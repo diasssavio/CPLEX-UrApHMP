@@ -31,7 +31,7 @@ CPLEXDIR	  = /opt/ibm/ILOG/CPLEX_Studio1261/cplex
 CONCERTDIR	  = /opt/ibm/ILOG/CPLEX_Studio1261/concert
 
 # Boost directory
-BOOST_ROOT = /opt/boost_1_59_0
+BOOST_ROOT = /opt/boost
 
 # Compiler
 CCC = g++-4.8
@@ -99,6 +99,10 @@ $(TMP_GIRP)/UrApHMP.o: $(SRC)/UrApHMP.cpp $(SRC)/UrApHMP.h
 $(TMP_GIRP)/solution.o: $(SRC)/solution.cpp $(SRC)/solution.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/solution.cpp -o $(TMP_GIRP)/solution.o
 
+# STRUCTURE - CHRONO
+$(TMP_GIRP)/FWChrono.o: $(SRC)/FWChrono.cpp $(SRC)/FWChrono.h
+	$(CCC) -c $(CCFLAGS) $(SRC)/FWChrono.cpp -o $(TMP_GIRP)/FWChrono.o
+
 # EXACT
 $(TMP_GIRP)/model.o: $(SRC)/model.cpp $(SRC)/model.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/model.cpp -o $(TMP_GIRP)/model.o
@@ -119,8 +123,8 @@ $(TMP_GIRP)/Configuration.o:  $(TMP_GIRP)/UrApHMP.o
 	gcc -Wl,-r  $(TMP_GIRP)/UrApHMP.o -o $(TMP_GIRP)/Configuration.o -nostdlib
 
 # STRUCTURE
-$(TMP_GIRP)/Structure.o: $(TMP_GIRP)/solution.o
-	gcc -Wl,-r $(TMP_GIRP)/solution.o -o $(TMP_GIRP)/Structure.o -nostdlib
+$(TMP_GIRP)/Structure.o: $(TMP_GIRP)/solution.o $(TMP_GIRP)/FWChrono.o
+	gcc -Wl,-r $(TMP_GIRP)/solution.o $(TMP_GIRP)/FWChrono.o -o $(TMP_GIRP)/Structure.o -nostdlib
 
 # EXACT
 $(TMP_GIRP)/Exact.o: $(TMP_GIRP)/model.o $(TMP_GIRP)/solver.o
@@ -131,12 +135,6 @@ $(TMP_GIRP)/Drawer.o: $(TMP_GIRP)/draw_graph.o
 	gcc -Wl,-r $(TMP_GIRP)/draw_graph.o -o $(TMP_GIRP)/Drawer.o -nostdlib
 
 ########################## LINKANDO TUDO ########################################################
-#ifeq ($(MERGE), STATIC)
-#$(CPP_EX):  $(TMP_STATIC)/libconfig.a $(TMP_STATIC)/libstructure.a $(TMP_STATIC)/libextra.a $(TMP_STATIC)/libmemory.a $(TMP_STATIC)/libbuilder.a $(TMP_STATIC)/libheuristic.a $(TMP_STATIC)/libutil.a $(TMP_GIRP)/IRP.o
-#	$(CCC)  $(CCFLAGS) $(TMP_GIRP)/IRP.o -L$(TMP_STATIC) -lconfig -lstructure -lextra -lmemory -lbuilder -lheuristic -lutil -o $(CPP_EX) $(CCLNFLAGS)
-#else
-#$(CPP_EX): $(TMP_GIRP)/FWMain.o $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/Builder.o $(TMP_GIRP)/Heuristic.o $(TMP_GIRP)/Algorithm.o $(TMP_GIRP)/IRP.o
-#	$(CCC)  $(CCFLAGS)  $(TMP_GIRP)/FWMain.o $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/Builder.o $(TMP_GIRP)/Heuristic.o $(TMP_GIRP)/Algorithm.o $(TMP_GIRP)/IRP.o -L$(TMP_STATIC) -o $(CPP_EX) $(CCLNFLAGS)
 $(CPP_EX): $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/Drawer.o $(TMP_GIRP)/main.o
 	$(CCC)  $(CCFLAGS) $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/Drawer.o $(TMP_GIRP)/main.o -L$(TMP_STATIC) -o $(CPP_EX) $(CCLNFLAGS)
 #endif
