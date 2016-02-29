@@ -40,47 +40,54 @@ static bool first_sol = true;
 static double first_time = 0.0;
 // FWChrono timer;
 
-ILOCUTCALLBACK2(CounterCall, IloNumVarArray2, z, FWChrono&, timer){
+ILOUSERCUTCALLBACK2(CounterCall, IloNumVarArray2, z, FWChrono&, timer){
 	if(first_sol) {
 		first_time = ((double) timer.getMilliSpan() / 1000);
 
 		IloNumArray2 _z;
-		IntegerFeasibilityArray feas;
-		IloInt i;
+		IntegerFeasibilityArray2 feas;
+		IloInt i, j;
 		IloEnv env = getEnv();
 
-		try {
-			feas_z = IntegerFeasibilityArray(env);
-			_z = IloNumArray2(env, z.getSize());
-			getValues(_z, z);
-			getFeasibilities(feas, z);
+		IloInt n = z.getSize();
 
-		  IloInt numberOfColumns = z.getSize();
+		try {
+			feas = IntegerFeasibilityArray2(env);
+			_z = IloNumArray2(env, n);
+			for(i = 0; i < n; i++){
+				_z[i] = IloNumArray(env, n);
+				feas[i] = IntegerFeasibilityArray(env);
+				getValues(_z[i], z[i]);
+				getFeasibilities(feas[i], z[i]);
+			}
+
 		  IloInt numberOfIInf = 0;
-		  for (i = 0; i < numberOfColumns; i++){
-				if (feas[i] == Infeasible)
-				  numberOfIInf += 1;
-		  }
+		  for (i = 0; i < n; i++)
+		  	for (j = 0; j < n; j++)
+					if (feas[i][j] == Infeasible)
+				  	numberOfIInf++;
 		  
 		  if (numberOfIInf == 0) {
 				env.out() << "----------MIP Feasible solution----------" << endl;
 				env.out() << "Nodes              : " << getNnodes()  << endl;
 				env.out() << "Objective value    : " << getObjValue()  << endl;
 		    env.out() << "Variable     Value      Feasibilities " << endl;
-	     	for (i = 0; i < numberOfColumns; i++) { 
-	        (env.out()).width(8);
-	        if ( z[i].getName() ) env.out() << z[i].getName();
-	        else env.out() << "var" << i;
+	     	for (i = 0; i < n; i++) { 
+	     		for (j = 0; j < n; j++) {
+		        (env.out()).width(8);
+		        if ( z[i][j].getName() ) env.out() << z[i][j].getName();
+		        else env.out() << "var" << i << " " << j;
 
-	        env.out() << "  ";
-	        (env.out()).width(8);           
-	        env.out() << _z[i];
-	        env.out() << "      ";
-	        (env.out()).width(8);
-	        env.out() << feas[i] << endl;           
+		        env.out() << "  ";
+		        (env.out()).width(8);           
+		        env.out() << _z[i][j];
+		        env.out() << "      ";
+		        (env.out()).width(8);
+	        	env.out() << feas[i][j] << endl;           
+	     		}
 	     	}
 				env.out() << "-----------------------------------------" << endl;
-		  }
+			}
 		} catch (IloException& e) {
 		  env.out() << e << endl;
 		  throw -1;

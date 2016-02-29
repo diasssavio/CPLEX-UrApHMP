@@ -23,6 +23,8 @@ typedef IloArray<IloBoolVarArray> IloBoolVarArray2;
 typedef IloArray<IloBoolVarArray2> IloBoolVarArray3;
 typedef IloArray<IloBoolVarArray3> IloBoolVarArray4;
 
+typedef IloArray<IntegerFeasibilityArray> IntegerFeasibilityArray2;
+
 typedef std::vector<int>::iterator VecIntIT;
 typedef std::vector<int>::const_iterator VecIntCIT;
 typedef std::vector<int> VecInt;
