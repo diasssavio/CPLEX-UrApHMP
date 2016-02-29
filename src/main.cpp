@@ -10,6 +10,7 @@
 #include "../include/solution.h"
 #include "../include/model.h"
 #include "../include/model2.h"
+#include "../include/typedef.hpp"
 
 using namespace std;
 
@@ -31,6 +32,68 @@ string to_string2(const T& t){
 void drawing(ofstream&, double**, solution&);
 
 ILOSTLBEGIN
+
+// Is it the first integer feasible solution?
+static bool first_sol = true;
+
+// Time against the first integer feasible solution
+static double first_time = 0.0;
+// FWChrono timer;
+
+ILOCUTCALLBACK2(CounterCall, IloNumVarArray2, z, FWChrono&, timer){
+	if(first_sol) {
+		first_time = ((double) timer.getMilliSpan() / 1000);
+
+		IloNumArray2 _z;
+		IntegerFeasibilityArray feas;
+		IloInt i;
+		IloEnv env = getEnv();
+
+		try {
+			feas_z = IntegerFeasibilityArray(env);
+			_z = IloNumArray2(env, z.getSize());
+			getValues(_z, z);
+			getFeasibilities(feas, z);
+
+		  IloInt numberOfColumns = z.getSize();
+		  IloInt numberOfIInf = 0;
+		  for (i = 0; i < numberOfColumns; i++){
+				if (feas[i] == Infeasible)
+				  numberOfIInf += 1;
+		  }
+		  
+		  if (numberOfIInf == 0) {
+				env.out() << "----------MIP Feasible solution----------" << endl;
+				env.out() << "Nodes              : " << getNnodes()  << endl;
+				env.out() << "Objective value    : " << getObjValue()  << endl;
+		    env.out() << "Variable     Value      Feasibilities " << endl;
+	     	for (i = 0; i < numberOfColumns; i++) { 
+	        (env.out()).width(8);
+	        if ( z[i].getName() ) env.out() << z[i].getName();
+	        else env.out() << "var" << i;
+
+	        env.out() << "  ";
+	        (env.out()).width(8);           
+	        env.out() << _z[i];
+	        env.out() << "      ";
+	        (env.out()).width(8);
+	        env.out() << feas[i] << endl;           
+	     	}
+				env.out() << "-----------------------------------------" << endl;
+		  }
+		} catch (IloException& e) {
+		  env.out() << e << endl;
+		  throw -1;
+		} catch (...) {
+		  _z.end();
+		  feas.end();
+		  throw -1;
+		}
+
+		first_sol = false;
+	}
+}
+
 int main(int argc, char* args[]){
 	// Reading input file
 	int p = string_to<int>(args[1]);
@@ -74,7 +137,7 @@ int main(int argc, char* args[]){
 	IloEnv env;
 
 	try{
-		model mod(env, instance, sol);
+		model2 mod(env, instance, sol);
 		IloCplex cplex(mod);
 		cplex.setParam(IloCplex::Threads, 1);
 		// cplex.setParam(IloCplex::NodeLim, 0);
@@ -85,9 +148,8 @@ int main(int argc, char* args[]){
 		
 		FWChrono timer;
 		timer.start();
-
+		cplex.use(CounterCall(env, mod.z, timer));
 		cplex.solve();
-		
 		timer.stop();
 
 		// Getting the allocation optima from cplex solver
@@ -111,12 +173,12 @@ int main(int argc, char* args[]){
 		vector<IloNum> result;
 		for(int i = 0; i < n; i++)
 			result.push_back(cplex.getValue(mod.z[i][i]));
-		cout << "Max Objective value = " << fixed << cplex.getObjValue() << endl << "Hubs: ";
+		cout << "Objective value = " << fixed << cplex.getObjValue() << endl << "Hubs: ";
 		for(int i = 0; i < n; i++)
 			if(result[i] != 0.0)
 				cout << i + 1 << " ";
 		cout << endl;
-		printf("Tempo de execução: %.2lf\n", timer.getStopTime());
+		printf("Total execution time: %.2lf\n", timer.getStopTime());
 
 		// Calculating the number of used edges
 		int count = 0;
@@ -125,6 +187,9 @@ int main(int argc, char* args[]){
 				if((cplex.getValue(mod.z[i][j]) != 0.0) && (i != j))
 					count++;
 		printf("Number of used edges: %d\n", count + (p * (p-1) / 2));
+
+
+		printf("Number of integer solutions: %d\n", cplex.getSolnPoolNsolns());
 		// for(int i = 0; i < n; i++){
 		// 	for(int j = 0; j < n; j++)
 		// 		printf("%.2lf  ", cplex.getValue(mod.z[i][j]));
