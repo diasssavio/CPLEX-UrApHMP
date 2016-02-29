@@ -5,6 +5,8 @@
 #include <ilcplex/ilocplex.h>
 #include <vector>
 
+#define MAX_DOUBLE 1e+75
+
 ///// CONCERT
 typedef IloArray<IloNumVarArray> IloNumVarArray2;
 typedef IloArray<IloNumVarArray2> IloNumVarArray3;

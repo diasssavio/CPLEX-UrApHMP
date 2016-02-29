@@ -5,7 +5,7 @@
  *      Author: savio
  */
 
-#include "model.h"
+#include "../include/model.h"
 
 model::model(IloEnv _env, uraphmp& _instance, solution& _sol) : IloModel(_env), instance(_instance), sol(_sol) {
 	init();
@@ -126,18 +126,54 @@ void model::add_const(){
 				add(c7);
 			}
 
-	// Defining values of z[k][k]
-	/*for(IloInt k = 0; k < n; k++){
+	// Defining values of z[k][k] & z[i][k] based on alloc_hubs from solution
+	/*vector< bool > alloc_hubs = sol.get_bin_alloc_hubs();
+	for(IloInt k = 0; k < n; k++){
 		IloConstraint c8;
-		if(k == 3 || k == 6 || k == 11 || k == 13 || k == 16)
-			c8 = (z[k][k] == 1.0);
+		if(alloc_hubs[k])
+			c8 = (z[k][k] == 1);
 		else
-			c8 = (z[k][k] == 0.0);
+			c8 = (z[k][k] == 0);
 		stringstream c8_name;
-		c8_name << "Cons(8)[" << k << "]";
+		c8_name << "Cons_8(" << k << ")";
 		c8.setName(c8_name.str().c_str());
 		add(c8);
-	}*/
+	}
+	for(IloInt k = 0; k < n; k++)
+		if(!alloc_hubs[k])
+			for(IloInt i = 0; i < n; i++){
+				IloConstraint c8 = (z[i][k] == 0);
+				stringstream c8_name;
+				c8_name << "Cons_8(" << i << ")(" << k << ")";
+				c8.setName(c8_name.str().c_str());
+				add(c8);
+			}
+
+	// Defining values of f[i][j][k][l] where z[k][k] == 0.0 or z[l][l] == 0.0
+	for(IloInt i = 0; i < n; i++)
+		for(IloInt j = 0; j < n; j++)
+			for(IloInt k = 0; k < n; k++)
+				if(!alloc_hubs[k]){
+					for(IloInt l = 0; l < n; l++){
+						IloConstraint c9 = (f[i][j][k][l] == 0.0);
+						stringstream c9_name;
+						c9_name << "Cons_9(" << i << ")(" << j << ")(" << k << ")(" << l << ")";
+						c9.setName(c9_name.str().c_str());
+						add(c9);
+					}
+				}
+	for(IloInt i = 0; i < n; i++)
+		for(IloInt j = 0; j < n; j++)
+			for(IloInt k = 0; k < n; k++)
+				if(alloc_hubs[k])
+					for(IloInt l = 0; l < n; l++)
+						if(!alloc_hubs[l]){
+							IloConstraint c10 = (f[i][j][k][l] == 0.0);
+							stringstream c10_name;
+							c10_name << "Cons_10(" << i << ")" << "(" << j << ")" << "(" << k << ")" << "(" << l << ")";
+							c10.setName(c10_name.str().c_str());
+							add(c10);
+						}*/
 }
 
 void model::add_obj(){

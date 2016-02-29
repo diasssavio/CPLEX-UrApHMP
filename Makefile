@@ -6,6 +6,7 @@ LIBFORMAT  = static_pic
 
 # Source code folder
 SRC	= src
+INCLUDE = include
 
 # Machine hostname
 MACHINE = $(shell hostname)
@@ -92,26 +93,24 @@ clean:
 ########################## GENERATING OBJECT's ######################################################
 
 # CONFIGURATION - INSTANCES
-$(TMP_GIRP)/UrApHMP.o: $(SRC)/UrApHMP.cpp $(SRC)/UrApHMP.h
+$(TMP_GIRP)/UrApHMP.o: $(SRC)/UrApHMP.cpp $(INCLUDE)/UrApHMP.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/UrApHMP.cpp -o $(TMP_GIRP)/UrApHMP.o
 
 # STRUCTURE - SOLUTION
-$(TMP_GIRP)/solution.o: $(SRC)/solution.cpp $(SRC)/solution.h
+$(TMP_GIRP)/solution.o: $(SRC)/solution.cpp $(INCLUDE)/solution.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/solution.cpp -o $(TMP_GIRP)/solution.o
 
 # STRUCTURE - CHRONO
-$(TMP_GIRP)/FWChrono.o: $(SRC)/FWChrono.cpp $(SRC)/FWChrono.h
+$(TMP_GIRP)/FWChrono.o: $(SRC)/FWChrono.cpp $(INCLUDE)/FWChrono.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/FWChrono.cpp -o $(TMP_GIRP)/FWChrono.o
 
 # EXACT
-$(TMP_GIRP)/model.o: $(SRC)/model.cpp $(SRC)/model.h
+$(TMP_GIRP)/model.o: $(SRC)/model.cpp $(INCLUDE)/model.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/model.cpp -o $(TMP_GIRP)/model.o
-$(TMP_GIRP)/solver.o: $(SRC)/solver.cpp $(SRC)/solver.h
+$(TMP_GIRP)/model2.o: $(SRC)/model2.cpp $(INCLUDE)/model2.h
+	$(CCC) -c $(CCFLAGS) $(SRC)/model2.cpp -o $(TMP_GIRP)/model2.o
+$(TMP_GIRP)/solver.o: $(SRC)/solver.cpp $(INCLUDE)/solver.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/solver.cpp -o $(TMP_GIRP)/solver.o
-
-# BOOST
-$(TMP_GIRP)/draw_graph.o: $(SRC)/draw_graph.cpp $(SRC)/draw_graph.h
-	$(CCC) -c $(CCFLAGS) $(SRC)/draw_graph.cpp -o $(TMP_GIRP)/draw_graph.o
 
 # MAIN
 $(TMP_GIRP)/main.o: $(SRC)/main.cpp
@@ -127,14 +126,10 @@ $(TMP_GIRP)/Structure.o: $(TMP_GIRP)/solution.o $(TMP_GIRP)/FWChrono.o
 	gcc -Wl,-r $(TMP_GIRP)/solution.o $(TMP_GIRP)/FWChrono.o -o $(TMP_GIRP)/Structure.o -nostdlib
 
 # EXACT
-$(TMP_GIRP)/Exact.o: $(TMP_GIRP)/model.o $(TMP_GIRP)/solver.o
-	gcc -Wl,-r $(TMP_GIRP)/model.o $(TMP_GIRP)/solver.o -o $(TMP_GIRP)/Exact.o -nostdlib
-
-# BOOST
-$(TMP_GIRP)/Drawer.o: $(TMP_GIRP)/draw_graph.o
-	gcc -Wl,-r $(TMP_GIRP)/draw_graph.o -o $(TMP_GIRP)/Drawer.o -nostdlib
+$(TMP_GIRP)/Exact.o: $(TMP_GIRP)/model.o $(TMP_GIRP)/model2.o $(TMP_GIRP)/solver.o
+	gcc -Wl,-r $(TMP_GIRP)/model.o $(TMP_GIRP)/model2.o $(TMP_GIRP)/solver.o -o $(TMP_GIRP)/Exact.o -nostdlib
 
 ########################## LINKANDO TUDO ########################################################
-$(CPP_EX): $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/Drawer.o $(TMP_GIRP)/main.o
-	$(CCC)  $(CCFLAGS) $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/Drawer.o $(TMP_GIRP)/main.o -L$(TMP_STATIC) -o $(CPP_EX) $(CCLNFLAGS)
+$(CPP_EX): $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/main.o
+	$(CCC)  $(CCFLAGS) $(TMP_GIRP)/Exact.o $(TMP_GIRP)/Configuration.o $(TMP_GIRP)/Structure.o $(TMP_GIRP)/main.o -L$(TMP_STATIC) -o $(CPP_EX) $(CCLNFLAGS)
 #endif

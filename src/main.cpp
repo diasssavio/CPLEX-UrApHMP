@@ -5,11 +5,11 @@
 #include <ctime>
 #include <ilcplex/ilocplex.h>
 
-#include "FWChrono.h"
-#include "UrApHMP.h"
-#include "solution.h"
-#include "model.h"
-#include "draw_graph.h"
+#include "../include/FWChrono.h"
+#include "../include/UrApHMP.h"
+#include "../include/solution.h"
+#include "../include/model.h"
+#include "../include/model2.h"
 
 using namespace std;
 
