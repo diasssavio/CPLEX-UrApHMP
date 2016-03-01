@@ -40,64 +40,54 @@ static bool first_sol = true;
 static double first_time = 0.0;
 // FWChrono timer;
 
-ILOUSERCUTCALLBACK2(CounterCall, IloNumVarArray2, z, FWChrono&, timer){
-	if(first_sol) {
+// ILOUSERCUTCALLBACK2(CounterCall, IloNumVarArray2, z, FWChrono&, timer){
+// 	if(first_sol && (getSolnPoolNsolns() == 1)){
+// 		first_time = ((double) timer.getMilliSpan() / 1000);
+// 		first_sol = false;
+// 	}
+// }
+
+//ILOINCUMBENTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
+/*ILOHEURISTICCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
+	IloEnv env = getEnv();
+//	if(getStatus() == IloAlgorithm::Status::Feasible){
+	if((getCplexStatus() == CPX_STAT_FEASIBLE) && first_time){
 		first_time = ((double) timer.getMilliSpan() / 1000);
-
-		IloNumArray2 _z;
-		IntegerFeasibilityArray2 feas;
-		IloInt i, j;
+		first_sol = false;
+		env.out() << "----------MIP Feasible solution----------" << endl;
+		env.out() << "Nodes              : " << getNnodes()  << endl;
+		env.out() << "Objective value    : " << getObjValue()  << endl;
+		env.out() << "-----------------------------------------" << endl;
+	}
+}*/
+ILOLAZYCONSTRAINTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
+//ILOUSERCUTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
+	if(first_sol) {
 		IloEnv env = getEnv();
-
 		IloInt n = z.getSize();
 
 		try {
-			feas = IntegerFeasibilityArray2(env);
-			_z = IloNumArray2(env, n);
-			for(i = 0; i < n; i++){
-				_z[i] = IloNumArray(env, n);
-				feas[i] = IntegerFeasibilityArray(env);
-				getValues(_z[i], z[i]);
-				getFeasibilities(feas[i], z[i]);
-			}
-
 		  IloInt numberOfIInf = 0;
-		  for (i = 0; i < n; i++)
-		  	for (j = 0; j < n; j++)
-					if (feas[i][j] == Infeasible)
+		  for (IloInt i = 0; i < n; i++)
+		  	for (IloInt j = 0; j < n; j++)
+				if (getFeasibility(z[i][j]) == Infeasible)
 				  	numberOfIInf++;
+		  cout << "Number of infeasibilities: " << numberOfIInf << endl;
 		  
 		  if (numberOfIInf == 0) {
+			  first_time = ((double) timer.getMilliSpan() / 1000);
+			  first_sol = false;
 				env.out() << "----------MIP Feasible solution----------" << endl;
 				env.out() << "Nodes              : " << getNnodes()  << endl;
 				env.out() << "Objective value    : " << getObjValue()  << endl;
-		    env.out() << "Variable     Value      Feasibilities " << endl;
-	     	for (i = 0; i < n; i++) { 
-	     		for (j = 0; j < n; j++) {
-		        (env.out()).width(8);
-		        if ( z[i][j].getName() ) env.out() << z[i][j].getName();
-		        else env.out() << "var" << i << " " << j;
-
-		        env.out() << "  ";
-		        (env.out()).width(8);           
-		        env.out() << _z[i][j];
-		        env.out() << "      ";
-		        (env.out()).width(8);
-	        	env.out() << feas[i][j] << endl;           
-	     		}
-	     	}
 				env.out() << "-----------------------------------------" << endl;
 			}
 		} catch (IloException& e) {
 		  env.out() << e << endl;
 		  throw -1;
 		} catch (...) {
-		  _z.end();
-		  feas.end();
 		  throw -1;
 		}
-
-		first_sol = false;
 	}
 }
 
@@ -195,7 +185,7 @@ int main(int argc, char* args[]){
 					count++;
 		printf("Number of used edges: %d\n", count + (p * (p-1) / 2));
 
-
+		printf("Time of the first integer solution: %.2lf\n", first_time);
 		printf("Number of integer solutions: %d\n", cplex.getSolnPoolNsolns());
 		// for(int i = 0; i < n; i++){
 		// 	for(int j = 0; j < n; j++)

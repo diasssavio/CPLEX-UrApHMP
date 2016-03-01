@@ -3,6 +3,7 @@
 
 // SYSTEM LIBRARIES
 #include <ilcplex/ilocplex.h>
+#include <ilcplex/ilocplexi.h>
 #include <vector>
 
 #define MAX_DOUBLE 1e+75
@@ -23,7 +24,8 @@ typedef IloArray<IloBoolVarArray> IloBoolVarArray2;
 typedef IloArray<IloBoolVarArray2> IloBoolVarArray3;
 typedef IloArray<IloBoolVarArray3> IloBoolVarArray4;
 
-typedef IloArray<IntegerFeasibilityArray> IntegerFeasibilityArray2;
+//typedef IloArray<IntegerFeasibilityStatus> IntegerFeasibilityArray;
+//typedef IloArray<ControlCallbackl::IntegerFeasibilityArray> IntegerFeasibilityArray2;
 
 typedef std::vector<int>::iterator VecIntIT;
 typedef std::vector<int>::const_iterator VecIntCIT;
