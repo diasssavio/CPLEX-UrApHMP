@@ -36,32 +36,28 @@ ILOSTLBEGIN
 // Is it the first integer feasible solution?
 static bool first_sol = true;
 
-// Time against the first integer feasible solution
+// Time & value against the first integer feasible solution
 static double first_time = 0.0;
-// FWChrono timer;
+static IloNum first_value = 0.0;
 
-// ILOUSERCUTCALLBACK2(CounterCall, IloNumVarArray2, z, FWChrono&, timer){
-// 	if(first_sol && (getSolnPoolNsolns() == 1)){
-// 		first_time = ((double) timer.getMilliSpan() / 1000);
-// 		first_sol = false;
-// 	}
-// }
+// Is it at root node?
+static bool root_node = true;
 
-//ILOINCUMBENTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
-/*ILOHEURISTICCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
-	IloEnv env = getEnv();
-//	if(getStatus() == IloAlgorithm::Status::Feasible){
-	if((getCplexStatus() == CPX_STAT_FEASIBLE) && first_time){
-		first_time = ((double) timer.getMilliSpan() / 1000);
-		first_sol = false;
-		env.out() << "----------MIP Feasible solution----------" << endl;
-		env.out() << "Nodes              : " << getNnodes()  << endl;
-		env.out() << "Objective value    : " << getObjValue()  << endl;
-		env.out() << "-----------------------------------------" << endl;
+// Linear Relaxation Objective Value & Time against
+static IloNum linear_obj = 0.0;
+static double linear_time = 0.0;
+
+ILOSOLVECALLBACK1(RelaxCall, FWChrono&, timer){
+	if(root_node){
+		solve();
+		linear_obj = getObjValue();
+		linear_time = ((double) timer.getMilliSpan() / 1000);
+
+		root_node = false;
 	}
-}*/
+}
+
 ILOLAZYCONSTRAINTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
-//ILOUSERCUTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
 	if(first_sol) {
 		IloEnv env = getEnv();
 		IloInt n = z.getSize();
@@ -75,6 +71,7 @@ ILOLAZYCONSTRAINTCALLBACK2(CounterCall, IloNumVarArray2&, z, FWChrono&, timer){
 		  cout << "Number of infeasibilities: " << numberOfIInf << endl;
 		  
 		  if (numberOfIInf == 0) {
+			  first_value = getObjValue();
 			  first_time = ((double) timer.getMilliSpan() / 1000);
 			  first_sol = false;
 				env.out() << "----------MIP Feasible solution----------" << endl;
@@ -146,6 +143,7 @@ int main(int argc, char* args[]){
 		FWChrono timer;
 		timer.start();
 		cplex.use(CounterCall(env, mod.z, timer));
+		cplex.use(RelaxCall(env, timer));
 		cplex.solve();
 		timer.stop();
 
@@ -186,15 +184,22 @@ int main(int argc, char* args[]){
 		printf("Number of used edges: %d\n", count + (p * (p-1) / 2));
 
 		printf("Time of the first integer solution: %.2lf\n", first_time);
-		printf("Number of integer solutions: %d\n", cplex.getSolnPoolNsolns());
-		// for(int i = 0; i < n; i++){
-		// 	for(int j = 0; j < n; j++)
-		// 		printf("%.2lf  ", cplex.getValue(mod.z[i][j]));
-		// 		// cout << cplex.getValue(mod.z[i][j]) << endl;
-		// 	cout << endl;
-		// }
+		printf("First Integer value: %.2lf\n", first_value);
+		printf("Number of integer solutions: %ld\n", cplex.getSolnPoolNsolns());
+		printf("Linear Relaxation value: %.2lf\n", linear_time);
+		printf("Linear Relaxation time: %.2lf\n", linear_obj);
+
+		// TODO Save the resulting data in a .csv file
+		ofstream _file;
+		_file.open("tests.csv", ios::app);
+		if(_file.is_open()){
+			_file.precision(3);
+			_file << fixed << linear_obj << "," << linear_time << "," << cplex.getBestObjValue() << "," << timer.getStopTime()
+					<< "," << first_value << "," << first_time << "," << cplex.getSolnPoolNsolns() << endl;
+			_file.close();
+		}
 	}catch(IloException& e){
-		cerr << "Concert Exception" << e << endl;
+		cerr << "Concert Exception: " << e << endl;
 	}
 	// Closing the environment
 	env.end();
